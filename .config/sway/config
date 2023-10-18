@@ -71,7 +71,8 @@ titlebar_padding 10 1
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+# output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+output * bg /home/anton/storage/pictures/backgrounds/beacon-street-sunset.jpg fill
 
 ### Idle configuration
 # This will lock your screen after 300 seconds of inactivity, then turn off
