@@ -1,0 +1,31 @@
+#!/bin/sh
+
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=sway
+export XDG_CURRENT_DESKTOP=sway
+export XDG_DESKTOP_DIR="$HOME"
+export XDG_DOWNLOAD_DIR="$HOME/downloads"
+export XDG_DOCUMENTS_DIR="$HOME/storage/documents"
+export XDG_MUSIC_DIR="$HOME/storage/music"
+export XDG_PICTURES_DIR="$HOME/storage/pictures"
+export XDG_VIDEOS_DIR="$HOME/storage/videos"
+
+export MOZ_ENABLE_WAYLAND=1
+export QT_IM_MODULE=ibus
+export QT_QPA_PLATFORM=wayland
+export SDL_VIDEODRIVER=wayland
+export GDK_BACKEND=wayland
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+if [ -z "$XDG_RUNTIME_DIR" ]
+then
+	export XDG_RUNTIME_DIR=/tmp/$(id -u)-runtime-dir
+	if [ ! -d "$XDG_RUNTIME_DIR" ]
+	then
+		mkdir "$XDG_RUNTIME_DIR"
+		chmod 0700 "$XDG_RUNTIME_DIR"
+	fi
+fi
+
+exec dbus-run-session -- sway $@
+

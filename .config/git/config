@@ -1,0 +1,5 @@
+[user]
+	name = Anton Shevelyov
+	email = Anton.Shevelyov@hotmail.com
+[init]
+	defaultBranch = master
