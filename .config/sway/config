@@ -105,7 +105,6 @@ input type:pointer {
 input type:touchpad {
 	accel_profile flat
 	pointer_accel 0.4
-	tap enabled
 	dwt enabled
 	tap_button_map lrm
 	natural_scroll enabled

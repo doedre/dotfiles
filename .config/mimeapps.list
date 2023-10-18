@@ -1,0 +1,21 @@
+[Default Applications]
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+x-scheme-handler/chrome=firefox.desktop
+text/html=firefox.desktop
+application/x-extension-htm=firefox.desktop
+application/x-extension-html=firefox.desktop
+application/x-extension-shtml=firefox.desktop
+application/xhtml+xml=firefox.desktop
+application/x-extension-xhtml=firefox.desktop
+application/x-extension-xht=firefox.desktop
+x-scheme-handler/tg=org.telegram.desktop.desktop
+text/plain=nvim.desktop
+application/pdf=org.pwmt.zathura.desktop
+application/djvu=org.pwmt.zathura.desktop
+image/png=org.gnome.gThumb.desktop
+image/jpeg=org.gnome.gThumb.desktop
+image/vnd.djvu=org.pwmt.zathura-djvu.desktop
+image/vnd.djvu+multipage=org.pwmt.zathura-djvu.desktop
+inode/directory=thunar.desktop
+
