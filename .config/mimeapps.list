@@ -1,14 +1,14 @@
 [Default Applications]
-x-scheme-handler/http=firefox.desktop
-x-scheme-handler/https=firefox.desktop
-x-scheme-handler/chrome=firefox.desktop
-text/html=firefox.desktop
-application/x-extension-htm=firefox.desktop
-application/x-extension-html=firefox.desktop
-application/x-extension-shtml=firefox.desktop
-application/xhtml+xml=firefox.desktop
-application/x-extension-xhtml=firefox.desktop
-application/x-extension-xht=firefox.desktop
+x-scheme-handler/http=Firefox.desktop
+x-scheme-handler/https=Firefox.desktop
+x-scheme-handler/chrome=Firefox.desktop
+text/html=Firefox.desktop
+application/x-extension-htm=Firefox.desktop
+application/x-extension-html=Firefox.desktop
+application/x-extension-shtml=Firefox.desktop
+application/xhtml+xml=Firefox.desktop
+application/x-extension-xhtml=Firefox.desktop
+application/x-extension-xht=Firefox.desktop
 x-scheme-handler/tg=org.telegram.desktop.desktop
 text/plain=nvim.desktop
 application/pdf=org.pwmt.zathura.desktop
@@ -19,3 +19,14 @@ image/vnd.djvu=org.pwmt.zathura-djvu.desktop
 image/vnd.djvu+multipage=org.pwmt.zathura-djvu.desktop
 inode/directory=thunar.desktop
 
+[Added Associations]
+x-scheme-handler/http=Firefox.desktop;
+x-scheme-handler/https=Firefox.desktop;
+x-scheme-handler/chrome=Firefox.desktop;
+text/html=Firefox.desktop;
+application/x-extension-htm=Firefox.desktop;
+application/x-extension-html=Firefox.desktop;
+application/x-extension-shtml=Firefox.desktop;
+application/xhtml+xml=Firefox.desktop;
+application/x-extension-xhtml=Firefox.desktop;
+application/x-extension-xht=Firefox.desktop;

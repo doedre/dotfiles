@@ -129,6 +129,9 @@ bindsym --to-code {
 	# Start tui file manager
 	$mod+f exec $floating_term $fm
 
+	# Dismiss notifications
+	$mod+m exec makoctl dismiss
+
 	# Exit sway (logs you out of your Wayland session)
 	$mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 }
