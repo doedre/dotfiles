@@ -265,7 +265,7 @@ set termguicolors
 colorscheme skull
 
 let g:lightline = { 'colorscheme': 'atlas' }
-let g:c_syntax_for_h = 0
+let g:c_syntax_for_h = 1
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 let g:qs_max_chars=200
