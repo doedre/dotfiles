@@ -252,6 +252,12 @@ bindsym --locked {
 	XF86AudioPrev exec playerctl previous
 	XF86AudioStop exec playerctl stop
 	Pause exec playerctl pause
+
+	# Screenshots
+	Print exec grimshot copy area
+	Shift+Print exec grimshot copy screen
+	Control+Print exec grimshot save area ~/storage/pictures/screenshots/$(date +%d-%m-%Y-%H-%M-%S).png
+	Control+Shift+Print exec grimshot save screen ~/storage/pictures/screenshots/$(date +%d-%m-%Y-%H-%M-%S).png
 }
 
 #
