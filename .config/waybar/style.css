@@ -2,8 +2,8 @@
 
 @keyframes blink-critical {
 	to {
-		/*color: @white;*/
-		background-color: @critical;
+		color: @critical;
+		/*background-color: @critical;*/
 	}
 }
 
