@@ -57,6 +57,9 @@ vim.opt.shiftwidth = 8
 vim.opt.smartindent = true
 vim.cmd("set nofoldenable")
 vim.cmd("let g:c_syntax_for_h = 1")
+vim.cmd("autocmd BufRead,BufNewFile *.cppm set filetype=cpp")
+vim.cmd("autocmd BufRead,BufNewFile *.cppp set filetype=cpp")
+vim.cmd("autocmd BufRead,BufNewFile *.ixx set filetype=cpp")
 
 -- Colorscheme
 --
