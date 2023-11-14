@@ -195,6 +195,16 @@
 	background: @date;
 }
 
+#idle_inhibitor.deactivated {
+	background: @bg;
+	color: @white
+}
+
+#idle_inhibitor.activated {
+	background: @bg;
+	color: @brred
+}
+
 #clock.date {
 	background: @bg;
 	color: @white;

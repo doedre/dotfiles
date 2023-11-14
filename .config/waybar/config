@@ -10,6 +10,7 @@
 
 	"modules-right": [
 		"tray",
+		"idle_inhibitor",
 		"network",
 		"cpu",
 		"custom/line-aqua",
@@ -24,6 +25,14 @@
 	],
 
 	// Modules
+
+	"idle_inhibitor": {
+		"format": "{icon}",
+		"format-icons": {
+			"activated": "",
+			"deactivated": ""
+		}
+	},
 
 	"sway/mode": {
 		"format": "{}",
@@ -70,15 +79,14 @@
 			"critical": 15
 		},
 		"format": "{icon} {capacity}%",
-		"format-charging": " {capacity}%",
-		"format-charging-full": " {capacity}%",
+		"format-charging": " {capacity}%",
+		"format-charging-full": " {capacity}%",
 		"format-full": "{icon} {capacity}%",
 		"format-alt": "{icon} {power}W",
 		"format-icons": [
-			"",
-			"",
-			"",
-			""
+			"",
+			"",
+			""
 		],
 		"tooltip": false
 	},
