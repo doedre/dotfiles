@@ -1,0 +1,138 @@
+#!/bin/sh
+
+# Steps for proper mods installation:
+# 1. OAAB data
+# 2. Tamriel data
+# 3. graphical mods
+# 4. gameplay mods
+# 5. Tamriel Rebuilt
+# ...
+
+morrowind_location=
+mods_location=
+debug_level=0
+initial_ifs="$IFS"
+
+mod_tamriel_data="Tamriel Data"
+
+show_help() {
+	printf 'Usage: \n'
+}
+
+debugf() {
+	if [ "$debug_level" -ge 3 ]
+	then
+		printf "\033[90mdebug: $1\033[0m\n"
+	fi
+}
+
+infof() {
+	if [ "$debug_level" -ge 2 ]
+	then
+		printf "\033[32minfo: $1\033[0m\n"
+	fi
+}
+
+errorf() {
+	if [ "$debug_level" -ge 1 ]
+	then
+		printf "\033[31merror: $1\033[0m\n"
+	fi
+}
+
+fatalf() {
+	printf "Error: $1" >&2
+	exit 1
+}
+
+rename_to_lowercase() {
+	if [ -e "$1" ]
+	then
+		new_name=`dirname "$1"`/`basename "$1" | tr "[:upper:]" "[:lower:]"`
+		mv -T "$1" "$new_name"
+		infof "Renamed \"$1\" to \"$new_name\""
+	else
+		infof "File $1 do not exist"
+	fi
+}
+
+while :; do
+	case $1 in
+		-h)
+			show_help
+			exit 0
+			;;
+		-v)
+			debug_level=1
+			;;
+		-vv)
+			debug_level=2
+			;;
+		-vvv)
+			debug_level=3
+			;;
+		-o)
+			if [ -n "$2" ]
+			then
+				morrowind_location=$2
+				shift
+			else
+				fatalf 'No location specified after "-o"'
+			fi
+			;;
+		-o?*)
+			morrowind_location=${1#-o}
+			morrowind_location=${morrowind_location#=}
+			if [ -z "$morrowind_location" ]
+			then
+				fatalf 'No location specified after "-o"'
+			fi
+			;;
+		-i)
+			if [ -n "$2" ]
+			then
+				mods_location=$2
+				shift
+			else
+				fatalf 'No location specified after "-i"'
+			fi
+			;;
+		-i?*)
+			mods_location=${1#-i}
+			mods_location=${mods_location#=}
+			if [ -z "$mods_location" ]
+			then
+				fatalf 'No location specified after "-i"'
+			fi
+			;;
+		-?*)
+			fatalf "Unknown option \"$1\""
+			;;
+		*)
+			break
+	esac
+
+	shift
+done
+
+if [ ! -d "$morrowind_location" ]
+then
+	fatalf "No such directory: \"$morrowind_location\""
+fi
+
+if [ ! -d "$mods_location" ]
+then
+	fatalf "No such directory: \"$mods_location\""
+fi
+
+debugf "morrowind_location=$morrowind_location"
+debugf "mods_location=$mods_location"
+
+IFS=$'\n'
+for archive in `find $mods_location -type f`
+do
+	infof "$archive"
+done
+IFS="$initial_ifs"
+
+
