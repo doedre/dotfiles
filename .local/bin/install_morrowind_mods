@@ -6,6 +6,8 @@
 # 3. graphical mods
 # 4. gameplay mods
 # 5. Tamriel Rebuilt
+# 6. Prepare morrowind installation
+# 7. copy fake data to morrowind's data
 # ...
 
 morrowind_location=
@@ -14,6 +16,9 @@ debug_level=0
 initial_ifs="$IFS"
 
 mod_tamriel_data="Tamriel Data"
+mod_OAAB_data="OAAB_Data"
+fake_morrowind_dir="mor"
+tmp_dir="tmp"
 
 show_help() {
 	printf 'Usage: \n'
@@ -43,17 +48,6 @@ errorf() {
 fatalf() {
 	printf "Error: $1" >&2
 	exit 1
-}
-
-rename_to_lowercase() {
-	if [ -e "$1" ]
-	then
-		new_name=`dirname "$1"`/`basename "$1" | tr "[:upper:]" "[:lower:]"`
-		mv -T "$1" "$new_name"
-		infof "Renamed \"$1\" to \"$new_name\""
-	else
-		infof "File $1 do not exist"
-	fi
 }
 
 while :; do
@@ -125,13 +119,134 @@ then
 	fatalf "No such directory: \"$mods_location\""
 fi
 
+morrowind_location=`dirname $morrowind_location`/`basename $morrowind_location`
+mods_location=`dirname $mods_location`/`basename $mods_location`
 debugf "morrowind_location=$morrowind_location"
 debugf "mods_location=$mods_location"
 
+rename_to_lowercase() {
+	debugf "Rename \"$1\" to lowercase if not already"
+	if [ -e "$1" ]
+	then
+		new_name=`dirname "$1"`/`basename "$1" | tr "[:upper:]" "[:lower:]"`
+		if [ "$new_name" != "$1" ]
+		then
+			mv -T "$1" "$new_name"
+			if [ $? -ne 0 ]
+			then
+				fatalf "Error renaming \"$1\""
+			fi
+			infof "Renamed \"$1\" to \"$new_name\""
+		fi
+	else
+		fatalf "File $1 do not exist"
+	fi
+}
+
+copy_to_data() {
+	debugf "Copy \"$1\" to \"$mods_location/$fake_morrowind_dir\""
+	if [ -d "$1" ]
+	then
+		cp -r "$1/*" "$mods_location/$fake_morrowind_dir/"
+		if [ $? -ne 0]
+		then
+			fatalf "Can't copy from \"$1\""
+		fi
+	else
+		errorf "Folder $1 do not exist"
+	fi
+}
+
+rename_tmp_to_lowercase() {
+	infof "Rename all folders in \"$mods_location/$tmp_dir\" to lowercase"
+	for folder in `find -P $mods_location/$tmp_dir -depth -type d`
+	do
+		rename_to_lowercase "$folder"
+	done
+}
+
+extract_archive_to_tmp() {
+	debugf "Extract \"$1\" archive to \"$mods_location/$tmp_dir\""
+
+	if [ -d "$mods_location/$tmp_dir" ]
+	then
+		rm -rf "$mods_location/$tmp_dir"
+	fi
+
+	if [ -e "$1" ]
+	then
+		case "${1##*.}" in
+			7z)
+				7z x -o"$mods_location/$tmp_dir" "$1"
+				;;
+			zip)
+				infof "zip extension"
+				;;
+			*)
+				errorf "unknown extension \"$1\""
+		esac
+	fi
+}
+
+preinstall_OAAB() {
+	infof "Preinstall $mod_OAAB_data"
+
+	core="$mods_location/$tmp_dir/00 core"
+	if [ -d $core ]
+	then
+		mkdir -p "$mods_location/$fake_morrowind_dir/data files"
+		cp -r "$core"/* "$mods_location/$fake_morrowind_dir/data files/"
+		if [ $? -ne 0 ]
+		then
+			fatalf "Error copying to $mods_location/$fake_morrowind_dir"
+		fi
+	else
+		fatalf "$core directory do not exist"
+	fi
+}
+
+preinstall_tamriel_data() {
+	infof "Preinstall $mod_tamriel_data"
+
+	core="$mods_location/$tmp_dir/00 data files"
+	if [ -d $core ]
+	then
+		mkdir -p "$mods_location/$fake_morrowind_dir/data files"
+		cp -r "$core"/* "$mods_location/$fake_morrowind_dir/data files/"
+		if [ $? -ne 0 ]
+		then
+			fatalf "Error copying to $mods_location/$fake_morrowind_dir"
+		fi
+	else
+		fatalf "$core directory do not exist"
+	fi
+}
+
+#rm -rf "$mods_location/$tmp_dir"
+#rm -rf "$mods_location/$fake_morrowind_dir"
+#mkdir -p "$mods_location/$fake_morrowind_dir"
+
+
 IFS=$'\n'
-for archive in `find $mods_location -type f`
+
+# Install OAAB and Tamriel data first
+for archive in `find -P $mods_location -maxdepth 1 -type f`
 do
 	infof "$archive"
+
+	if [ "${archive#*"$mod_OAAB_data"}" != "$archive" ]
+	then
+		extract_archive_to_tmp "$archive"
+		rename_tmp_to_lowercase
+		preinstall_OAAB
+	fi
+
+	if [ "${archive#*"$mod_tamriel_data"}" != "$archive" ]
+	then
+		extract_archive_to_tmp "$archive"
+		rename_tmp_to_lowercase
+		preinstall_tamriel_data
+	fi
 done
 IFS="$initial_ifs"
 
