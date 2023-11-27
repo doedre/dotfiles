@@ -7,7 +7,8 @@
 # 4. gameplay mods
 # 5. Tamriel Rebuilt
 # 6. Prepare morrowind installation
-# 7. copy fake data to morrowind's data
+# 7. copy fake data to morrowind data
+# 8. Make tweaks in morrowind
 # ...
 
 morrowind_location=
@@ -15,10 +16,12 @@ mods_location=
 debug_level=0
 initial_ifs="$IFS"
 
-mod_tamriel_data="Tamriel Data"
-mod_OAAB_data="OAAB_Data"
 fake_morrowind_dir="mor"
 tmp_dir="tmp"
+installed_dir="installed"
+
+mod_tamriel_data="Tamriel Data"
+mod_OAAB_data="OAAB_Data"
 
 show_help() {
 	printf 'Usage: \n'
@@ -136,7 +139,7 @@ rename_to_lowercase() {
 			then
 				fatalf "Error renaming \"$1\""
 			fi
-			infof "Renamed \"$1\" to \"$new_name\""
+			debugf "Renamed \"$1\" to \"$new_name\""
 		fi
 	else
 		fatalf "File $1 do not exist"
@@ -165,8 +168,16 @@ rename_tmp_to_lowercase() {
 	done
 }
 
+rename_morrowind_to_lowercase() {
+	infof "Rename all folders in \"$morrowind_location\" to lowercase"
+	for folder in `find -P $morrowind_location -depth -type d`
+	do
+		rename_to_lowercase "$folder"
+	done
+}
+
 extract_archive_to_tmp() {
-	debugf "Extract \"$1\" archive to \"$mods_location/$tmp_dir\""
+	infof "Extract \"$1\" archive to \"$mods_location/$tmp_dir\""
 
 	if [ -d "$mods_location/$tmp_dir" ]
 	then
@@ -177,63 +188,125 @@ extract_archive_to_tmp() {
 	then
 		case "${1##*.}" in
 			7z)
-				7z x -o"$mods_location/$tmp_dir" "$1"
+				7z x -o"$mods_location/$tmp_dir" "$1" >/dev/null
+				if [ $? -ne 0 ]
+				then
+					fatalf "Cannot extract archive"
+				fi
+				mv "$1" "$mods_location/$installed_dir/"
+				if [ $? -ne 0 ]
+				then
+					fatalf "Cannot move extracted archive"
+				fi
 				;;
 			zip)
-				infof "zip extension"
+				unzip "$1" -d"$mods_location/$tmp_dir" >/dev/null
+				if [ $? -ne 0 ]
+				then
+					fatalf "Cannot extract archive"
+				fi
+				mv "$1" "$mods_location/$installed_dir/"
+				if [ $? -ne 0 ]
+				then
+					fatalf "Cannot move extracted archive"
+				fi
+				;;
+			rar)
+				unrar x -op"$mods_location/$tmp_dir" "$1" >/dev/null
+				if [ $? -ne 0 ]
+				then
+					fatalf "Cannot extract archive"
+				fi
+				mv "$1" "$mods_location/$installed_dir/"
+				if [ $? -ne 0 ]
+				then
+					fatalf "Cannot move extracted archive"
+				fi
 				;;
 			*)
-				errorf "unknown extension \"$1\""
+				fatalf "Unknown archive extension \"$1\""
 		esac
 	fi
 }
 
 preinstall_OAAB() {
-	infof "Preinstall $mod_OAAB_data"
-
-	core="$mods_location/$tmp_dir/00 core"
-	if [ -d $core ]
-	then
-		mkdir -p "$mods_location/$fake_morrowind_dir/data files"
-		cp -r "$core"/* "$mods_location/$fake_morrowind_dir/data files/"
-		if [ $? -ne 0 ]
-		then
-			fatalf "Error copying to $mods_location/$fake_morrowind_dir"
-		fi
-	else
-		fatalf "$core directory do not exist"
-	fi
+	preinstall_mod_data_files "00 core"
 }
 
 preinstall_tamriel_data() {
-	infof "Preinstall $mod_tamriel_data"
+	preinstall_mod_data_files "00 data files"
+}
 
-	core="$mods_location/$tmp_dir/00 data files"
-	if [ -d $core ]
+preinstall_tamriel_rebuilt() {
+	preinstall_mod_data_files "00 core"
+	preinstall_mod_data_files "01 faction integration"
+	preinstall_mod_data_files "02 siege at firemoth compatibility patch"
+}
+
+preinstall_mod_data_files() {
+
+	data="$mods_location/$tmp_dir"
+	if [ ! -z "$1" ]
 	then
-		mkdir -p "$mods_location/$fake_morrowind_dir/data files"
-		cp -r "$core"/* "$mods_location/$fake_morrowind_dir/data files/"
-		if [ $? -ne 0 ]
-		then
-			fatalf "Error copying to $mods_location/$fake_morrowind_dir"
-		fi
+		infof "Use custom path for data files dir"
+		data="$mods_location/$tmp_dir/$1"
 	else
-		fatalf "$core directory do not exist"
+		if [ -d "$mods_location/$tmp_dir/data files" ]
+		then
+			data="$mods_location/$tmp_dir/data files"
+		elif [ -d "$mods_location/$tmp_dir/00 core" ]
+		then
+			data="$mods_location/$tmp_dir/00 core"
+		elif [ -d "$mods_location/$tmp_dir/00 data files" ]
+		then
+			data="$mods_location/$tmp_dir/00 data files"
+		else
+			infof "Use root directory of the mod as data files directory"
+		fi
+	fi
+
+	if [ ! -d "$data" ]
+	then
+		fatalf "\"$data\" directory do not exist"
+	fi
+
+	infof "Preinstall data files from \"$data\" directory"
+
+	mkdir -p "$mods_location/$fake_morrowind_dir/data files"
+	cp -r "$data"/* "$mods_location/$fake_morrowind_dir/data files"
+	if [ $? -ne 0 ]
+	then
+		fatalf "Cannot copy to $mods_location/$fake_morrowind_dir"
 	fi
 }
 
-#rm -rf "$mods_location/$tmp_dir"
-#rm -rf "$mods_location/$fake_morrowind_dir"
-#mkdir -p "$mods_location/$fake_morrowind_dir"
+if [ -d "$mods_location/$fake_morrowind_dir" ]
+then
+	fatalf "Previous installation was not resolved"
+fi
 
+mkdir -p "$mods_location/$fake_morrowind_dir"
+if [ $? -ne 0 ]
+then
+	fatalf "Cannot create fake morrowind dir in \"$mods_location/$fake_morrowind_dir\""
+fi
+
+if [ -d "$mods_location/$installed_dir" ]
+then
+	fatalf "Previous installation was not resolved"
+else
+	mkdir -p "$mods_location/$installed_dir"
+	if [ $? -ne 0 ]
+	then
+		fatalf "Cannot create directory for installed mods in \"$mods_location/$installed_dir\""
+	fi
+fi
 
 IFS=$'\n'
 
 # Install OAAB and Tamriel data first
 for archive in `find -P $mods_location -maxdepth 1 -type f`
 do
-	infof "$archive"
-
 	if [ "${archive#*"$mod_OAAB_data"}" != "$archive" ]
 	then
 		extract_archive_to_tmp "$archive"
@@ -248,6 +321,65 @@ do
 		preinstall_tamriel_data
 	fi
 done
+
+# Install all other mods
+for archive in `find -P $mods_location -maxdepth 1 -type f`
+do
+	infof "$archive"
+
+	extract_archive_to_tmp "$archive"
+	rename_tmp_to_lowercase
+	if [ "${archive#*"Izi"}" != "$archive" ]
+	then
+		preinstall_mod_data_files "(eng) izi forts - all in one v3.0/data"
+	elif [ "${archive#*"Tamriel Rebuilt"}" != "$archive" ]
+	then
+		preinstall_tamriel_rebuilt
+	else
+		preinstall_mod_data_files ""
+	fi
+done
+
+# Prepare morrowind directory
+rename_morrowind_to_lowercase
+cp -rf "$mods_location/$fake_morrowind_dir"/* "$morrowind_location/"
+if [ $? -ne 0 ]
+then
+	fatalf "Failed to copy fake morrowind root over true one"
+fi
+
+sed -i '/Archive 1=Bloodmoon.bsa/a \Archive 2=PC_Data.bsa\
+Archive 3=TR_Data.bsa\
+Archive 4=Sky_Data.bsa' "$morrowind_location/Morrowind.ini"
+if [ $? -ne 0 ]
+then
+	errorf "Failed to register Tamriel Data bsa"
+fi
+
 IFS="$initial_ifs"
+
+mv "$mods_location/$installed_dir"/* "$mods_location/"
+if [ $? -ne 0 ]
+then
+	fatalf "Cannot move mods back to \"$mods_location\""
+fi
+
+rm -rf "$mods_location/$installed_dir"
+if [ $? -ne 0 ]
+then
+	fatalf "Cannot remove \"$mods_location/$installed_dir\""
+fi
+
+rm -rf "$mods_location/$tmp_dir"
+if [ $? -ne 0 ]
+then
+	fatalf "Cannot remove \"$mods_location/$tmp_dir\""
+fi
+
+rm -rf "$mods_location/$fake_morrowind_dir"
+if [ $? -ne 0 ]
+then
+	fatalf "Cannot remove \"$mods_location/$fake_morrowind_dir\""
+fi
 
 
