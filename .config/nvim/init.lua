@@ -35,6 +35,8 @@ require("lazy").setup({
   "nvim-lualine/lualine.nvim",
   -- Git signs
   "lewis6991/gitsigns.nvim",
+  -- Better TeX support
+  "lervag/vimtex",
 })
 
 -- General settings
@@ -211,6 +213,7 @@ require("nvim-treesitter.configs").setup({
 
   highlight = {
     enable = true,
+    disable = { "latex" }
   },
 
   incremental_selection = {
@@ -307,4 +310,11 @@ require('gitsigns').setup {
 }
 
 vim.keymap.set('n', '<space>ghr', ':Gitsigns reset_hunk<CR>', opts)
+
+vim.cmd("let g:vimtex_view_method = 'zathura'")
+vim.cmd([[
+let g:vimtex_compiler_latexmk = {
+\ 'build_dir': 'output',
+\}
+]])
 
