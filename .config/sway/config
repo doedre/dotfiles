@@ -304,6 +304,7 @@ exec_always gsettings set org.gnome.desktop.interface {
 }
 
 exec /usr/libexec/pipewire-launcher
+exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec mako
 exec foot --server
 
