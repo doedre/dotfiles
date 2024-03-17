@@ -6,5 +6,5 @@ end
 source /home/anton/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
 
 set -gx EDITOR nvim
-set -gx VISUAL less
+set -gx PAGER less
 
