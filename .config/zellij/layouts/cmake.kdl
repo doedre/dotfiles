@@ -1,0 +1,29 @@
+layout {
+    tab_template name="strider_tab" {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        pane split_direction="vertical" {
+            pane size="15%" {
+                plugin location="zellij:strider"
+            }
+            children
+        }
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    strider_tab name="dev" focus=true {
+        pane split_direction="vertical" {
+            pane edit=""
+            pane edit="tests"
+        }
+        pane size="30%" stacked=true {
+            pane name="test" command="cmake" start_suspended=true {
+                args "--workflow" "--preset" "debug-local"
+            }
+            pane name="terminal"
+        }
+    }
+}
