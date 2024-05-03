@@ -207,19 +207,6 @@ simplified_ui true
 // Once these themes are defined, one of them should to be selected in the "theme" section of this file
 
 themes {
-    dracula {
-        fg 248 248 242
-        bg 40 42 54
-        red 255 85 85
-        green 80 250 123
-        yellow 241 250 140
-        blue 98 114 164
-        magenta 255 121 198
-        orange 255 184 108
-        cyan 139 233 253
-        black 0 0 0
-        white 255 255 255
-    }
     gruvbox-light {
         fg 124 111 100
         bg 251 82 75

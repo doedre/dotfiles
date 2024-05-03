@@ -1,0 +1,47 @@
+#!/bin/sh
+
+scheme="dark"
+
+fatalf() {
+	printf "Error: $1" >&2
+	exit 1
+}
+
+while :; do
+	case $1 in
+		-h)
+			show_help
+			exit 0
+			;;
+		--light)
+			scheme="light"
+			;;
+		--dark)
+			scheme="dark"
+			;;
+		-?*)
+			fatalf "Unknown option \"$1\""
+			;;
+		*)
+			break
+	esac
+
+	shift
+done
+
+if [ "$scheme" == "light" ]
+then
+	theme.sh gruvbox
+	yes | fish -c 'fish_config theme save fish\ default'
+	sed -i -e '/vim.o.background/s/dark/light/' $HOME/.config/nvim/init.lua
+	sed -i -e '/theme/s/dark/light/' $HOME/.config/zellij/config.kdl
+elif [ "$scheme" == "dark" ]
+then
+	theme.sh gruvbox-dark
+	yes | fish -c 'fish_config theme save Base16\ Default\ Dark'
+	sed -i -e '/vim.o.background/s/light/dark/' $HOME/.config/nvim/init.lua
+	sed -i -e '/theme/s/light/dark/' $HOME/.config/zellij/config.kdl
+else
+	fatalf "Unknown scheme \"$scheme\""
+fi
+
