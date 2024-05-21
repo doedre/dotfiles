@@ -91,7 +91,7 @@ exec swayidle -w \
 # Read `man 5 sway-input` for more information about this section.
 seat seat0 {
 	xcursor_theme Adwaita 24
-	idle_wake keyboard
+	idle_inhibit keyboard
 	hide_cursor 4000
 }
 
