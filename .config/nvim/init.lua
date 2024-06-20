@@ -62,6 +62,7 @@ vim.cmd("let g:c_syntax_for_h = 1")
 vim.cmd("autocmd BufRead,BufNewFile *.cppm set filetype=cpp")
 vim.cmd("autocmd BufRead,BufNewFile *.cppp set filetype=cpp")
 vim.cmd("autocmd BufRead,BufNewFile *.ixx set filetype=cpp")
+vim.cmd("autocmd BufRead,BufNewFile *.zon set filetype=zig")
 
 -- Colorscheme
 --
@@ -187,13 +188,21 @@ capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'clangd', 'pylsp', 'rust_analyzer', 'zls', 'ols' }
+local servers = { 'clangd', 'pylsp', 'rust_analyzer', 'ols' }
 for _, lsp in pairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
     capabilities = capabilities
   }
 end
+
+lspconfig['zls'].setup {
+  settings = {
+    zls = {
+      enable_autofix = false
+    }
+  }
+}
 
 -- Statusline configuration
 --
